@@ -6,7 +6,7 @@ import org.gradle.api.tasks.Exec
 
 class LatexPlugin implements Plugin<Project> {
 
-  boolean isExecutableExisting(execName) {
+  private boolean isExecutableExisting(execName) {
     def exists = false
     def pathEntries = System.getenv("PATH").tokenize(File.pathSeparator)
     for(entry in pathEntries) {
@@ -16,23 +16,24 @@ class LatexPlugin implements Plugin<Project> {
     return exists
   }
 
+  @Override
   void apply(Project project) {
-  
     project.extensions.create("latex", LatexPluginExtension)
     
     project.defaultTasks 'cook'
 
     project.task('check') {
       doFirst{
-        println("Checking that 'pdflatex' is in the path system variable...")
-        if (!isExecutableExisting("pdflatex")) {
-          throw new InvalidUserDataException("The binary 'pdflatex' is not present in the path.")
+        println("Checking that '${project.latex.latexBinary}' is in the path system variable...")
+        if (!isExecutableExisting("${project.latex.latexBinary}")) {
+          throw new InvalidUserDataException("The binary '${project.latex.latexBinary}' is not present in the path.")
         }
-        println("Checking that 'biber' is in the path system variable...")
-        if (!isExecutableExisting("biber")) {
-          throw new InvalidUserDataException("The binary 'biber' is not present in the path.")
+        
+        println("Checking that '${project.latex.bibtexBinary}' is in the path system variable...")
+        if (!isExecutableExisting("${project.latex.bibtexBinary}")) {
+          throw new InvalidUserDataException("The binary '${project.latex.bibtexBinary}' is not present in the path.")
         }
-
+        
         println("Checking that the primary source file exists...")
         if (!project.file("${project.latex.rawDirectory}/${project.latex.latexFile}").exists()) {
           throw new InvalidUserDataException("The file '${project.latex.rawDirectory}/${project.latex.latexFile}' does not exist.")
@@ -124,6 +125,8 @@ class LatexPlugin implements Plugin<Project> {
 }
 
 class LatexPluginExtension {
+    def latexBinary = 'pdflatex'
+    def bibtexBinary = 'biber'
     def documentBase = 'Test'
     def rawDirectory = 'src'
     def tmpDirectory = 'build'

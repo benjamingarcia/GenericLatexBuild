@@ -21,6 +21,7 @@ version = "0.1"
 group = "de.cschubertcs.latex"
 
 pluginBundle {
+  website = 'https://github.com/cschubertcs/GenericLatexBuild'
   vcsUrl = 'https://github.com/cschubertcs/GenericLatexBuild'
   description = 'Simple LaTeX plugin to build LaTeX documents.'
   tags = ['LaTeX', 'latex']

@@ -1,3 +1,5 @@
+package de.cschubertcs.latex
+
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project

@@ -94,7 +94,7 @@ class LatexPlugin implements Plugin<Project> {
       }
     }
 
-    project.task('biber', type: Exec, dependsOn: project.check) {
+    project.task('biber', type: Biber, dependsOn: project.check) {
       doFirst {
         println "Building the bibliography of ${project.latex.latexFilePath} into ${project.latex.tmpDirectory} via biber."
       }
@@ -103,16 +103,9 @@ class LatexPlugin implements Plugin<Project> {
         project.file("${->project.latex.biberConfigFilePath}").exists()
       }
 
-      standardOutput = new ByteArrayOutputStream() // stops output to STDOUT
-
-      workingDir '.'
-      commandLine(
-        "biber",
-        "-D",
-        "--input-directory", "${->project.latex.rawDirectory}",
-        "${->project.latex.biberConfigFilePath}"
-      )
-      ignoreExitValue true
+	  setDocumentBase("${project.latex.documentBase}")
+	  setSourceDirectory("${project.latex.rawDirectory}")
+	  setTargetDirectory("${project.latex.Directory}")
 
       doLast {
         if (execResult.exitValue != 0) {

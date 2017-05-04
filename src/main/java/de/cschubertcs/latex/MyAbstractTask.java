@@ -9,47 +9,49 @@ import org.gradle.process.ExecResult;
 import org.gradle.process.ExecSpec;
 import org.gradle.process.internal.ExecException;
 
+import groovy.lang.GString;
+
 public abstract class MyAbstractTask extends DefaultTask {
 
-  private String binaryName;
-  private String documentBase;
-  private String sourceDirectory;
-  private String targetDirectory;
+  private GString binaryName;
+  private GString documentBase;
+  private GString sourceDirectory;
+  private GString targetDirectory;
   private ExecResult execResult;
   private OutputStream standardOutput = System.out;
   private OutputStream errorOutput = System.err;
 
   protected abstract Object[] getCommandLine();
   
-  public String getBinaryName() {
+  public GString getBinaryName() {
     return this.binaryName;
   }
   
-  public void setBinaryName(String binaryName) {
+  public void setBinaryName(GString binaryName) {
     this.binaryName = binaryName;
   }
 
-  public String getDocumentBase() {
+  public GString getDocumentBase() {
     return documentBase;
   }
 
-  public void setDocumentBase(String documentBase) {
+  public void setDocumentBase(GString documentBase) {
     this.documentBase = documentBase;
   }
 
-  public String getSourceDirectory() {
+  public GString getSourceDirectory() {
     return sourceDirectory;
   }
 
-  public void setSourceDirectory(String sourceDirectory) {
+  public void setSourceDirectory(GString sourceDirectory) {
     this.sourceDirectory = sourceDirectory;
   }
 
-  public String getTargetDirectory() {
+  public GString getTargetDirectory() {
     return targetDirectory;
   }
 
-  public void setTargetDirectory(String targetDirectory) {
+  public void setTargetDirectory(GString targetDirectory) {
     this.targetDirectory = targetDirectory;
   }
 

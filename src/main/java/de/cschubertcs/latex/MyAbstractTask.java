@@ -1,5 +1,6 @@
 package de.cschubertcs.latex;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 import org.gradle.api.Action;
@@ -22,6 +23,11 @@ public abstract class MyAbstractTask extends DefaultTask {
   private OutputStream errorOutput = System.err;
 
   protected abstract Object[] getCommandLine();
+  
+  public MyAbstractTask() {
+    setStandardOutput(new ByteArrayOutputStream());
+    setErrorOutput(new ByteArrayOutputStream());
+  }
   
   public GString getBinaryName() {
     return this.binaryName;

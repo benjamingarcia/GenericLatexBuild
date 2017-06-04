@@ -28,7 +28,7 @@ public class Latex extends MyAbstractTask {
     return String.format("%s/%s%s", getSourceDirectory(), getDocumentBase(), LATEX_EXTENSION);
   }
 
-  @InputFiles
+  //@InputFiles
   public List<File> getInputFiles() {
     List<File> files = new ArrayList<>(TARGET_INPUT_EXTENSIONS.length + 1);
     files.add(getFile(getLatexFilePath()));
@@ -39,7 +39,7 @@ public class Latex extends MyAbstractTask {
     return files;
   }
 
-  @OutputFiles
+  //@OutputFiles
   public List<File> getOutputFiles() {
     List<File> files = new ArrayList<>(OUTPUT_EXTENSIONS.length);
     for (String extension : OUTPUT_EXTENSIONS) {

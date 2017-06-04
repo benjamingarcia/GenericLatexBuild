@@ -5,6 +5,7 @@ import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.tasks.Exec
+import org.gradle.api.GradleException;
 
 class LatexPlugin implements Plugin<Project> {
 
@@ -22,23 +23,23 @@ class LatexPlugin implements Plugin<Project> {
   void apply(Project project) {
     project.extensions.create("latex", LatexPluginExtension)
 
-    project.defaultTasks 'cook'
+    project.defaultTasks 'pdfLatexRun3'
 
     project.task('check') {
       doFirst{
         println("Checking that '${project.latex.latexBinary}' is in the path system variable...")
         if (!isExecutableExisting("${project.latex.latexBinary}")) {
-          throw new InvalidUserDataException("The binary '${project.latex.latexBinary}' is not present in the path.")
+          throw new GradleException("The binary '${project.latex.latexBinary}' is not present in the path.")
         }
 
         println("Checking that '${project.latex.biberBinary}' is in the path system variable...")
         if (!isExecutableExisting("${project.latex.biberBinary}")) {
-          throw new InvalidUserDataException("The binary '${project.latex.biberBinary}' is not present in the path.")
+          throw new GradleException("The binary '${project.latex.biberBinary}' is not present in the path.")
         }
 
         println("Checking that the primary source file exists...")
         if (!project.file("${project.latex.latexFilePath}").exists()) {
-          throw new InvalidUserDataException("The file '${project.latex.latexFilePath}' does not exist.")
+          throw new GradleException("The file '${project.latex.latexFilePath}' does not exist.")
         }
 
         println("Checking that the target directory exists (or creating it if necessary)...")
@@ -47,56 +48,61 @@ class LatexPlugin implements Plugin<Project> {
           println "Created target directory ${project.latex.tmpDirectory}"
         }
       }
+      
+      inputs.property "PATH", System.getenv("PATH")
+      outputs.upToDateWhen { 
+        project.file("${project.latex.latexFilePath}").exists() && project.file("${project.latex.tmpDirectory}").exists()
+      }
     }
 
+    project.task('pdfLatexRun1', type: Latex, dependsOn: project.check)
+    
+    project.task('biber', type: Biber, dependsOn: project.pdfLatexRun1)
+    
+    project.task('pdfLatexRun2', type: Latex, dependsOn: project.biber)
+    
+    project.task('pdfLatexRun3', type: Latex, dependsOn: project.pdfLatexRun2) 
+    
     (1..3).each { counter ->
-      project.task("pdfLatexRun$counter", type: Latex, dependsOn: project.check) {
-        /*if( counter > 2 ) {
-          // the third run is only needed in case that there is a biber file
-          project."pdfLatexRun$counter".onlyIf {
-            project.file("${->project.latex.biberConfigFilePath}").exists()
-          }
-        }*/
-        
-        // stop any output to the terminal (optional)
-        standardOutput new ByteArrayOutputStream()
-        errorOutput new ByteArrayOutputStream()
-        
-        // set the needed parameter (lazy evaluated to reflect user changes)
+      project."pdfLatexRun$counter" {
+        // the needed parameter (lazy evaluated to reflect user changes)
         binaryName "${->project.latex.latexBinary}"
         documentBase "${->project.latex.documentBase}"
         sourceDirectory "${->project.latex.rawDirectory}"
         targetDirectory "${->project.latex.tmpDirectory}"
       }
     }
-
-    project.task('biber', type: Biber, dependsOn: project.check) {
-      // stop any output to the terminal (optional)
-	  standardOutput new ByteArrayOutputStream()
-	  errorOutput new ByteArrayOutputStream()
-
-      // set the needed parameter (lazy evaluated to reflect user changes)
-      binaryName "${->project.latex.biberBinary}"
-	  documentBase "${->project.latex.documentBase}"
-	  sourceDirectory "${->project.latex.rawDirectory}"
-	  targetDirectory "${->project.latex.tmpDirectory}"
+    
+    project.'pdfLatexRun1' {
+        inputs.file("${->project.latex.latexFilePath}")
+        outputs.file("${->project.latex.tmpDirectory}/${->project.latex.documentBase}.aux")
+        outputs.file("${->project.latex.tmpDirectory}/${->project.latex.documentBase}.log")
+        outputs.file("${->project.latex.tmpDirectory}/${->project.latex.documentBase}.log")
+    }
+    
+    project.'biber' {
+        // set the needed parameter (lazy evaluated to reflect user changes)
+        binaryName "${->project.latex.biberBinary}"
+        documentBase "${->project.latex.documentBase}"
+        sourceDirectory "${->project.latex.rawDirectory}"
+        targetDirectory "${->project.latex.tmpDirectory}"
     }
 
-
-    project.task('cook') {
-      dependsOn project.pdfLatexRun1
-      dependsOn project.pdfLatexRun2
-      dependsOn project.biber
-      dependsOn project.pdfLatexRun3
-
-      project.biber.mustRunAfter project.pdfLatexRun1
-      project.pdfLatexRun2.mustRunAfter project.biber
-      project.pdfLatexRun3.mustRunAfter project.pdfLatexRun2
-
-      doLast {
-        println "Built ${project.latex.latexFilePath} to ${project.latex.pdfFilePath}."
-      }
+    project.'pdfLatexRun2' {
+        inputs.file("${->project.latex.latexFilePath}")
+        outputs.file("${->project.latex.tmpDirectory}/${->project.latex.documentBase}.aux")
+        outputs.file("${->project.latex.tmpDirectory}/${->project.latex.documentBase}.log")
     }
+    
+    project.'pdfLatexRun3' { 
+        onlyIf {
+            project.file("${->project.latex.biberConfigFilePath}").exists()
+        }
+        inputs.file("${->project.latex.latexFilePath}")
+        outputs.file("${->project.latex.tmpDirectory}/${->project.latex.documentBase}.aux")
+        outputs.file("${->project.latex.tmpDirectory}/${->project.latex.documentBase}.log")
+    }
+
   }
 }
 

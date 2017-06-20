@@ -55,7 +55,7 @@ public class Latex extends MyAbstractTask {
 
   @Override
   protected Object[] getCommandLine() {
-    return new Object[] { getBinaryName(), "-output-directory", getTargetDirectory(), getLatexFilePath() };
+    return new Object[] { getBinaryName(), "-synctex=1", "-interaction=nonstopmode", "-output-directory", getTargetDirectory(), getLatexFilePath() };
   }
 
 }

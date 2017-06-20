@@ -27,25 +27,25 @@ class LatexPlugin implements Plugin<Project> {
 
     project.task('check') {
       doFirst{
-        println("Checking that '${project.latex.latexBinary}' is in the path system variable...")
+        logger.quiet("Checking that '${project.latex.latexBinary}' is in the path system variable...")
         if (!isExecutableExisting("${project.latex.latexBinary}")) {
           throw new GradleException("The binary '${project.latex.latexBinary}' is not present in the path.")
         }
 
-        println("Checking that '${project.latex.biberBinary}' is in the path system variable...")
+        logger.quiet("Checking that '${project.latex.biberBinary}' is in the path system variable...")
         if (!isExecutableExisting("${project.latex.biberBinary}")) {
           throw new GradleException("The binary '${project.latex.biberBinary}' is not present in the path.")
         }
 
-        println("Checking that the primary source file exists...")
+        logger.quiet("Checking that the primary source file exists...")
         if (!project.file("${project.latex.latexFilePath}").exists()) {
           throw new GradleException("The file '${project.latex.latexFilePath}' does not exist.")
         }
 
-        println("Checking that the target directory exists (or creating it if necessary)...")
+        logger.quiet("Checking that the target directory exists (or creating it if necessary)...")
         if (!project.file("${project.latex.tmpDirectory}").exists()) {
           project.mkdir project.latex.tmpDirectory
-          println "Created target directory ${project.latex.tmpDirectory}"
+          logger.quiet "Created target directory ${project.latex.tmpDirectory}"
         }
       }
       

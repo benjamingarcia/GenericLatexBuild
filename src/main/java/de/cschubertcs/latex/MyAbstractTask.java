@@ -9,11 +9,15 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.ExecResult;
 import org.gradle.process.ExecSpec;
 import org.gradle.process.internal.ExecException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import groovy.lang.GString;
 
 public abstract class MyAbstractTask extends DefaultTask {
 
+  private static final Logger logger = LoggerFactory.getLogger(MyAbstractTask.class);
+  
   private GString binaryName;
   private GString documentBase;
   private GString sourceDirectory;
@@ -87,10 +91,10 @@ public abstract class MyAbstractTask extends DefaultTask {
     try {
       execResult = getProject().exec(action);
     } catch (ExecException e) {
-      System.out.printf("%s standard output:", getBinaryName());
-      System.out.println(getStandardOutput().toString());
-      System.out.printf("%s error output:", getBinaryName());
-      System.out.println(getErrorOutput().toString());
+      logger.error("%s standard output:", getBinaryName());
+      logger.error(getStandardOutput().toString());
+      logger.error("%s error output:", getBinaryName());
+      logger.error(getErrorOutput().toString());
       String errorMessage = String.format(
           "There was an error while executing the command '%s'. See the output above for more information.",
           action.lastCommandLine);
@@ -110,6 +114,7 @@ public abstract class MyAbstractTask extends DefaultTask {
       spec.setErrorOutput(getErrorOutput());
       
       this.lastCommandLine = String.join(" ", spec.getCommandLine());
+      logger.warn("Executing command: '{}'", this.lastCommandLine);
     }
     
   }

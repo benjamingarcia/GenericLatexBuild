@@ -14,8 +14,10 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 /bin/
 
-# Java/Eclipse Stuff
+# Java/Eclipse/idea Stuff
 .classpath
 .project
 .settings/
+.idea/
+*.iml
 

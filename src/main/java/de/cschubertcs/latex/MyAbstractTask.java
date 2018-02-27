@@ -31,6 +31,7 @@ public abstract class MyAbstractTask extends DefaultTask {
   public MyAbstractTask() {
     setStandardOutput(new ByteArrayOutputStream());
     setErrorOutput(new ByteArrayOutputStream());
+    setGroup("Tex");
   }
   
   public GString getBinaryName() {

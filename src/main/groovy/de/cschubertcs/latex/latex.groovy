@@ -110,8 +110,8 @@ class LatexPluginExtension {
     def latexBinary = 'pdflatex'
     def biberBinary = 'biber'
 
-    def documentBase = 'Test'
-    def rawDirectory = 'src'
+    def documentBase = 'main'
+    def rawDirectory = 'src/main/latex'
     def tmpDirectory = 'build'
 
     def latexFile = "${-> documentBase}.tex"
